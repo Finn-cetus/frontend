@@ -642,12 +642,16 @@
         async function fetchCourses(page = 1) {
             try {
                 const response = await fetch(`${API_URL}/api/courses?page=${page}&limit=${limit}`);
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    // Ném lỗi với thông điệp từ server nếu có, hoặc thông điệp chung
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.msg || `Lỗi máy chủ: ${response.status}`);
+                }
                 return await response.json();
             } catch (error) {
                 console.error('Failed to fetch courses:', error);
-                showNotification('Không thể tải danh sách khóa học.', 'error');
-                return { courses: [], totalPages: 0, currentPage: 1 };
+                // Ném lỗi ra ngoài để hàm gọi có thể xử lý
+                throw error;
             }
         }
 
@@ -674,24 +678,28 @@
         }
 
         // ===== CÁC HÀM GIAO DIỆN =====
-        function loadCourses(page) {
+        async function loadCourses(page) {
             currentPage = page;
             const courseGrid = document.getElementById('courseGrid');
-            courseGrid.innerHTML = '<div class="loading"></div>';
+            courseGrid.innerHTML = '<div class="loading"></div>'; // Hiển thị loading
+            document.getElementById('paginationControls').innerHTML = ''; // Xóa điều khiển trang cũ
 
-            fetchCourses(page).then(data => {
-                courseGrid.innerHTML = '';
+            try {
+                const data = await fetchCourses(page);
+                courseGrid.innerHTML = ''; // Xóa loading
                 
-                // *** SỬA LỖI TẠI ĐÂY ***
-                // Kiểm tra xem data.courses có tồn tại và có phần tử không
                 if (data && data.courses && data.courses.length > 0) {
                      data.courses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
                      renderPaginationControls(data.totalPages, data.currentPage);
                 } else {
                     courseGrid.innerHTML = '<p>Chưa có khóa học nào được đăng tải.</p>';
-                    document.getElementById('paginationControls').innerHTML = '';
                 }
-            });
+            } catch (error) {
+                 // *** SỬA LỖI TẠI ĐÂY ***
+                 // Hiển thị thông báo lỗi thân thiện cho người dùng
+                courseGrid.innerHTML = `<p style="color: #ffc107;">Rất tiếc, đã xảy ra lỗi khi tải khóa học. Vui lòng thử lại sau. <br><small>Chi tiết: ${error.message}</small></p>`;
+                showNotification('Không thể tải danh sách khóa học.', 'error');
+            }
         }
 
         function renderPaginationControls(totalPages, currentPage) {
