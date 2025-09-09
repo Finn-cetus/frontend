@@ -522,25 +522,18 @@
         <section>
             <h2 class="section-title">
                 <i class="fas fa-fire"></i>
-                Khóa học hot nhất
+                Tất cả khóa học
             </h2>
             <div class="course-grid" id="courseGrid">
-                <!-- Courses will be dynamically loaded here -->
-            </div>
+                </div>
         </section>
-
-        <section>
-            <h2 class="section-title">
-                <i class="fas fa-clock"></i>
-                Mới nhất
-            </h2>
-            <div class="course-grid" id="recentCourses">
-                <!-- Recent courses will be loaded here -->
-            </div>
+        
+        <section class="pagination-section" style="text-align: center; margin-bottom: 2rem;">
+            <div id="paginationControls">
+                </div>
         </section>
     </main>
 
-    <!-- Login/Register Modal -->
     <div class="modal" id="authModal">
         <div class="modal-content">
             <button class="modal-close cursor-pointer" id="closeAuthModal">
@@ -590,7 +583,6 @@
         </div>
     </div>
 
-    <!-- Upload Course Modal -->
     <div class="modal" id="uploadModal">
         <div class="modal-content">
             <button class="modal-close cursor-pointer" id="closeUploadModal">
@@ -633,373 +625,327 @@
     </div>
 
     <script>
-    const API_URL = 'https://backend-nyun.onrender.com'; // Hoặc URL backend của bạn
-    let currentUser = null;
+        const API_URL = 'https://backend-nyun.onrender.com'; // Hoặc URL backend của bạn trên Render
+        let currentUser = null;
+        let currentPage = 1;
+        const limit = 6; // Số khóa học mỗi trang
 
-    // ===== KHỞI TẠO ỨNG DỤNG =====
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeBackgroundAnimation();
-        loadCourses();
-        setupEventListeners();
-        checkLoginStatus();
-    });
-
-    // ===== CÁC HÀM GỌI API =====
-    async function fetchCourses() {
-        try {
-            const response = await fetch(`${API_URL}/api/courses`);
-            if (!response.ok) throw new Error('Network response was not ok');
-            return await response.json();
-        } catch (error) {
-            console.error('Failed to fetch courses:', error);
-            showNotification('Không thể tải danh sách khóa học.', 'error');
-            return [];
-        }
-    }
-
-    async function postData(endpoint, data, token = null) {
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) {
-            headers['x-auth-token'] = token;
-        }
-        try {
-            const response = await fetch(`${API_URL}/api${endpoint}`, { // Thêm /api
-                method: 'POST',
-                headers,
-                body: JSON.stringify(data)
-            });
-            const responseData = await response.json();
-            if (!response.ok) {
-                // Sử dụng msg từ backend validator
-                throw new Error(responseData.msg || 'Đã có lỗi xảy ra');
-            }
-            return responseData;
-        } catch (error) {
-            showNotification(error.message, 'error');
-            throw error;
-        }
-    }
-
-    // ===== CÁC HÀM GIAO DIỆN =====
-    function loadCourses() {
-        const courseGrid = document.getElementById('courseGrid');
-        const recentGrid = document.getElementById('recentCourses');
-        courseGrid.innerHTML = '<div class="loading"></div>';
-        recentGrid.innerHTML = '<div class="loading"></div>';
-
-        fetchCourses().then(courses => {
-            courseGrid.innerHTML = '';
-            recentGrid.innerHTML = '';
-            
-            const hotCourses = courses.slice(0, 6);
-            if (hotCourses.length > 0) {
-                 hotCourses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
-            } else {
-                courseGrid.innerHTML = '<p>Chưa có khóa học nào.</p>';
-            }
-
-            const recentCourses = courses.slice(0, 4);
-             if (recentCourses.length > 0) {
-                recentCourses.forEach(course => recentGrid.appendChild(createCourseCard(course)));
-            } else {
-                recentGrid.innerHTML = '<p>Chưa có khóa học nào.</p>';
-            }
-        });
-    }
-
-    function createCourseCard(course) {
-        const card = document.createElement('div');
-        card.className = 'course-card cursor-pointer';
-        const icons = { 'Frontend': 'fab fa-react', 'Backend': 'fab fa-node-js', 'AI/ML': 'fas fa-brain', 'Mobile': 'fas fa-mobile-alt', 'DevOps': 'fab fa-docker', 'Database': 'fas fa-database', 'UI/UX': 'fas fa-palette' };
-        const icon = icons[course.category] || 'fas fa-book';
-
-        card.innerHTML = `
-            <div class="course-image">
-                <i class="${icon}" style="z-index: 1; position: relative;"></i>
-            </div>
-            <div class="course-content">
-                <h3 class="course-title">${escapeHTML(course.title)}</h3>
-                <p class="course-author">by @${escapeHTML(course.authorName)}</p>
-                <div class="course-stats">
-                    <span><i class="fas fa-eye"></i> 0</span> <span class="course-category">${escapeHTML(course.category)}</span>
-                </div>
-            </div>
-        `;
-        card.addEventListener('click', () => window.open(course.link, '_blank'));
-        return card;
-    }
-
-    function updateUIForLoggedIn(username) {
-        const loginBtn = document.getElementById('loginBtn');
-        const navButtons = document.querySelector('.nav-buttons');
-        const uploadBtn = document.getElementById('uploadBtn');
-
-        const oldLogoutBtn = document.getElementById('logoutBtn');
-        if (oldLogoutBtn) oldLogoutBtn.remove();
-        
-        loginBtn.style.display = 'none'; // Ẩn nút đăng nhập
-        
-        // Tạo user button
-        const userBtn = document.createElement('button');
-        userBtn.id = 'userBtn';
-        userBtn.className = 'btn btn-secondary cursor-pointer';
-        userBtn.innerHTML = `<i class="fas fa-user"></i> ${escapeHTML(username)}`;
-        navButtons.insertBefore(userBtn, uploadBtn);
-        
-        // Tạo nút logout
-        const logoutBtn = document.createElement('button');
-        logoutBtn.id = 'logoutBtn';
-        logoutBtn.className = 'btn btn-secondary cursor-pointer';
-        logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
-        logoutBtn.onclick = handleLogout;
-        navButtons.insertBefore(logoutBtn, uploadBtn.nextSibling);
-
-        uploadBtn.style.display = 'block';
-    }
-
-    function updateUIForLoggedOut() {
-        const loginBtn = document.getElementById('loginBtn');
-        const navButtons = document.querySelector('.nav-buttons');
-        const uploadBtn = document.getElementById('uploadBtn');
-
-        const userBtn = document.getElementById('userBtn');
-        if (userBtn) userBtn.remove();
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) logoutBtn.remove();
-
-        loginBtn.style.display = 'block';
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
-        loginBtn.onclick = () => document.getElementById('authModal').style.display = 'flex';
-        uploadBtn.style.display = 'block'; // Có thể ẩn đi nếu muốn: 'none'
-    }
-
-    // ===== XỬ LÝ SỰ KIỆN =====
-    function setupEventListeners() {
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            document.body.classList.toggle('light-theme');
-            this.querySelector('i').className = document.body.classList.contains('light-theme') ? 'fas fa-sun' : 'fas fa-moon';
-        });
-
-        document.getElementById('loginBtn').addEventListener('click', () => document.getElementById('authModal').style.display = 'flex');
-        document.getElementById('uploadBtn').addEventListener('click', () => {
-             if (!currentUser) {
-                showNotification('Bạn cần đăng nhập để đăng tải khóa học.', 'warning');
-                document.getElementById('authModal').style.display = 'flex';
-                return;
-            }
-            document.getElementById('uploadModal').style.display = 'flex';
-        });
-        document.getElementById('closeAuthModal').addEventListener('click', () => document.getElementById('authModal').style.display = 'none');
-        document.getElementById('closeUploadModal').addEventListener('click', () => document.getElementById('uploadModal').style.display = 'none');
-        
-        document.querySelectorAll('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById(this.dataset.tab + 'Form').classList.add('active');
-            });
-        });
-
-        document.getElementById('registerForm').addEventListener('submit', handleRegister);
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        document.getElementById('uploadForm').addEventListener('submit', handleUpload);
-    }
-    
-    async function handleRegister(e) {
-        e.preventDefault();
-        const form = e.target;
-        const button = form.querySelector('button[type="submit"]');
-        const username = form.querySelector('input[placeholder="devmaster123"]').value;
-        const email = form.querySelector('input[type="email"]').value;
-        const password = form.querySelectorAll('input[type="password"]')[0].value;
-        const password2 = form.querySelectorAll('input[type="password"]')[1].value;
-
-        if (password !== password2) {
-            return showNotification('Mật khẩu xác nhận không khớp!', 'error');
-        }
-        if (password.length < 6) {
-            return showNotification('Mật khẩu phải có ít nhất 6 ký tự.', 'error');
-        }
-
-        setButtonLoading(button, true);
-        try {
-            const data = await postData('/auth/register', { username, email, password });
-            localStorage.setItem('token', data.token);
+        // ===== KHỞI TẠO ỨNG DỤNG =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBackgroundAnimation();
+            loadCourses(currentPage);
+            setupEventListeners();
             checkLoginStatus();
-            document.getElementById('authModal').style.display = 'none';
-            showNotification('Đăng ký thành công! Chào mừng bạn.', 'success');
-            form.reset();
-        } catch (error) {
-            console.error('Registration failed:', error);
-        } finally {
-            setButtonLoading(button, false);
-        }
-    }
-    
-    async function handleLogin(e) {
-        e.preventDefault();
-        const form = e.target;
-        const button = form.querySelector('button[type="submit"]');
-        // Sửa lại để lấy đúng email field
-        const email = form.querySelector('input[placeholder="your@email.com"]').value;
-        const password = form.querySelector('input[type="password"]').value;
+        });
 
-        if (!email || !password) {
-            return showNotification('Vui lòng nhập đầy đủ email và mật khẩu.', 'error');
-        }
-
-        setButtonLoading(button, true);
-        try {
-            const data = await postData('/auth/login', { email, password });
-            localStorage.setItem('token', data.token);
-            checkLoginStatus();
-            document.getElementById('authModal').style.display = 'none';
-            showNotification('Chào mừng bạn trở lại!', 'success');
-            form.reset();
-        } catch (error) {
-            console.error('Login failed:', error);
-        } finally {
-            setButtonLoading(button, false);
-        }
-    }
-
-    async function handleUpload(e) {
-        e.preventDefault();
-        const token = localStorage.getItem('token');
-        if (!token) {
-            return showNotification('Bạn cần đăng nhập để đăng tải khóa học.', 'warning');
-        }
-
-        const form = e.target;
-        const button = form.querySelector('button[type="submit"]');
-        const courseData = {
-            title: form.querySelector('input[type="text"]').value,
-            link: form.querySelector('input[type="url"]').value,
-            category: form.querySelector('select').value,
-            description: form.querySelector('textarea').value
-        };
-        
-        if(!courseData.title || !courseData.link) {
-            return showNotification('Vui lòng nhập Tên và Link khóa học.', 'error');
-        }
-
-        setButtonLoading(button, true);
-        try {
-            await postData('/courses', courseData, token);
-            document.getElementById('uploadModal').style.display = 'none';
-            showNotification('Khóa học của bạn đã được đăng tải thành công!', 'success');
-            form.reset();
-            loadCourses(); // Tải lại danh sách khóa học
-        } catch (error) {
-            console.error('Upload failed:', error);
-        } finally {
-            setButtonLoading(button, false);
-        }
-    }
-
-    function handleLogout() {
-        localStorage.removeItem('token');
-        currentUser = null;
-        updateUIForLoggedOut();
-        showNotification('Bạn đã đăng xuất.', 'info');
-    }
-
-    // ===== QUẢN LÝ PHIÊN ĐĂNG NHẬP =====
-    function checkLoginStatus() {
-        const token = localStorage.getItem('token');
-        if (token) {
+        // ===== CÁC HÀM GỌI API =====
+        async function fetchCourses(page = 1) {
             try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                // Kiểm tra token hết hạn
-                if (payload.exp * 1000 < Date.now()) {
-                    handleLogout();
-                    return;
-                }
-                currentUser = { username: payload.user.username };
-                updateUIForLoggedIn(currentUser.username);
-            } catch (e) {
-                handleLogout(); // Xóa token hỏng
+                // Thêm page và limit vào URL
+                const response = await fetch(`${API_URL}/courses?page=${page}&limit=${limit}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                return await response.json();
+            } catch (error) {
+                console.error('Failed to fetch courses:', error);
+                showNotification('Không thể tải danh sách khóa học.', 'error');
+                return { courses: [], totalPages: 0, currentPage: 1 }; // Trả về đối tượng trống khi lỗi
             }
-        } else {
-            updateUIForLoggedOut();
         }
-    }
 
-    // ===== CÁC HÀM TIỆN ÍCH KHÁC =====
-    function setButtonLoading(button, isLoading) {
-        if (isLoading) {
-            button.disabled = true;
-            button.innerHTML = '<div class="loading" style="margin: 0 auto;"></div>';
-        } else {
-            button.disabled = false;
-            // Phục hồi lại nội dung gốc của nút (cần cải tiến nếu nội dung phức tạp)
-            const formId = button.parentElement.id;
-            if (formId === 'loginForm') button.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
-            else if (formId === 'registerForm') button.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
-            else if (formId === 'uploadForm') button.innerHTML = '<i class="fas fa-check"></i> Đăng tải khóa học';
+        async function postData(endpoint, data, token = null) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['x-auth-token'] = token;
+            }
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data)
+                });
+                const responseData = await response.json();
+                if (!response.ok) {
+                    throw new Error(responseData.msg || 'Something went wrong');
+                }
+                return responseData;
+            } catch (error) {
+                showNotification(error.message, 'error');
+                throw error;
+            }
         }
-    }
 
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
+        // ===== CÁC HÀM GIAO DIỆN =====
+        function loadCourses(page) {
+            currentPage = page; // Cập nhật trang hiện tại
+            const courseGrid = document.getElementById('courseGrid');
+            courseGrid.innerHTML = '<div class="loading"></div>'; // Loading indicator
+
+            fetchCourses(page).then(data => {
+                courseGrid.innerHTML = '';
+                
+                if (data.courses && data.courses.length > 0) {
+                     data.courses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
+                     renderPaginationControls(data.totalPages, data.currentPage);
+                } else {
+                    courseGrid.innerHTML = '<p>Không tìm thấy khóa học nào.</p>';
+                    document.getElementById('paginationControls').innerHTML = '';
+                }
+            });
+        }
+
+        function renderPaginationControls(totalPages, currentPage) {
+            const paginationControls = document.getElementById('paginationControls');
+            paginationControls.innerHTML = '';
+
+            if (totalPages <= 1) return; // Không hiển thị nếu chỉ có 1 trang
+
+            // Nút Trang trước
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerHTML = '&laquo; Trang trước';
+                prevBtn.className = 'btn btn-secondary cursor-pointer';
+                prevBtn.style.margin = '0 5px';
+                prevBtn.onclick = () => loadCourses(currentPage - 1);
+                paginationControls.appendChild(prevBtn);
+            }
+
+            // Hiển thị thông tin trang
+            const pageInfo = document.createElement('span');
+            pageInfo.textContent = `Trang ${currentPage} / ${totalPages}`;
+            pageInfo.style.margin = '0 1rem';
+            pageInfo.style.verticalAlign = 'middle';
+            paginationControls.appendChild(pageInfo);
+
+            // Nút Trang sau
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.innerHTML = 'Trang sau &raquo;';
+                nextBtn.className = 'btn btn-secondary cursor-pointer';
+                nextBtn.style.margin = '0 5px';
+                nextBtn.onclick = () => loadCourses(currentPage + 1);
+                paginationControls.appendChild(nextBtn);
+            }
+        }
+
+
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card cursor-pointer';
+            const icons = { 'Frontend': 'fab fa-react', 'Backend': 'fab fa-node-js', 'AI/ML': 'fas fa-brain', 'Mobile': 'fas fa-mobile-alt', 'DevOps': 'fab fa-docker' };
+            const icon = icons[course.category] || 'fas fa-book';
+
+            card.innerHTML = `
+                <div class="course-image">
+                    <i class="${icon}" style="z-index: 1; position: relative;"></i>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">${course.title}</h3>
+                    <p class="course-author">by @${course.authorName}</p>
+                    <div class="course-stats">
+                        <span><i class="fas fa-eye"></i> 0</span> <span class="course-category">${course.category}</span>
+                    </div>
+                </div>
+            `;
+            card.addEventListener('click', () => window.open(course.link, '_blank'));
+            return card;
+        }
+
+        function updateUIForLoggedIn(username) {
+            const loginBtn = document.getElementById('loginBtn');
+            const navButtons = document.querySelector('.nav-buttons');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            const oldLogoutBtn = document.getElementById('logoutBtn');
+            if (oldLogoutBtn) oldLogoutBtn.remove();
+            
+            loginBtn.innerHTML = `<i class="fas fa-user"></i> ${username}`;
+            loginBtn.onclick = () => {}; 
+            
+            const logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logoutBtn';
+            logoutBtn.className = 'btn btn-secondary cursor-pointer';
+            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
+            logoutBtn.onclick = handleLogout;
+            navButtons.insertBefore(logoutBtn, uploadBtn.nextSibling);
+
+            uploadBtn.style.display = 'block';
+        }
+
+        function updateUIForLoggedOut() {
+            const loginBtn = document.getElementById('loginBtn');
+            const navButtons = document.querySelector('.nav-buttons');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if(logoutBtn) logoutBtn.remove();
+
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+            loginBtn.onclick = () => document.getElementById('authModal').style.display = 'flex';
+        }
+
+        // ===== XỬ LÝ SỰ KIỆN =====
+        function setupEventListeners() {
+            document.getElementById('themeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('light-theme');
+                this.querySelector('i').className = document.body.classList.contains('light-theme') ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            document.getElementById('loginBtn').addEventListener('click', () => document.getElementById('authModal').style.display = 'flex');
+            document.getElementById('uploadBtn').addEventListener('click', () => {
+                 if (!currentUser) {
+                    showNotification('Bạn cần đăng nhập để đăng tải khóa học.', 'warning');
+                    document.getElementById('authModal').style.display = 'flex';
+                } else {
+                    document.getElementById('uploadModal').style.display = 'flex';
+                }
+            });
+            document.getElementById('closeAuthModal').addEventListener('click', () => document.getElementById('authModal').style.display = 'none');
+            document.getElementById('closeUploadModal').addEventListener('click', () => document.getElementById('uploadModal').style.display = 'none');
+            
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + 'Form').classList.add('active');
+                });
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('uploadForm').addEventListener('submit', handleUpload);
+        }
         
-        // CSS for notification
-        const style = document.createElement('style');
-        style.innerHTML = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            z-index: 9999;
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+        async function handleRegister(e) {
+            e.preventDefault();
+            const form = e.target;
+            const username = form.querySelector('input[placeholder="devmaster123"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelectorAll('input[type="password"]')[0].value;
+            const password2 = form.querySelectorAll('input[type="password"]')[1].value;
+
+            if (password !== password2) {
+                return showNotification('Mật khẩu không khớp!', 'error');
+            }
+
+            try {
+                const data = await postData('/auth/register', { username, email, password });
+                localStorage.setItem('token', data.token);
+                checkLoginStatus();
+                document.getElementById('authModal').style.display = 'none';
+                showNotification('Đăng ký thành công!', 'success');
+                form.reset();
+            } catch (error) {
+                console.error('Registration failed:', error);
+            }
         }
-        .notification.success { background: linear-gradient(45deg, #28a745, #218838); }
-        .notification.error { background: linear-gradient(45deg, #dc3545, #c82333); }
-        .notification.warning { background: linear-gradient(45deg, #ffc107, #e0a800); color: #212529; }
-        .notification.info { background: linear-gradient(45deg, #17a2b8, #138496); }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.querySelector('input[type="text"]').value;
+            const password = form.querySelector('input[type="password"]').value;
 
-        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
-        `;
-        document.head.appendChild(style);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
-    }
-
-    function escapeHTML(str) {
-        return str.replace(/[&<>"']/g, function (match) {
-            return {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            }[match];
-        });
-    }
-
-    function initializeBackgroundAnimation() {
-        const bgAnimation = document.getElementById('bgAnimation');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.animationDuration = `${Math.random() * 5 + 5}s`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            bgAnimation.appendChild(particle);
+            try {
+                const data = await postData('/auth/login', { email, password });
+                localStorage.setItem('token', data.token);
+                checkLoginStatus();
+                document.getElementById('authModal').style.display = 'none';
+                showNotification('Chào mừng bạn trở lại!', 'success');
+                form.reset();
+            } catch (error) {
+                console.error('Login failed:', error);
+            }
         }
-    }
-</script>
+
+        async function handleUpload(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                return showNotification('Bạn cần đăng nhập để đăng tải khóa học.', 'warning');
+            }
+
+            const form = e.target;
+            const courseData = {
+                title: form.querySelector('input[type="text"]').value,
+                link: form.querySelector('input[type="url"]').value,
+                category: form.querySelector('select').value,
+                description: form.querySelector('textarea').value
+            };
+            
+            try {
+                await postData('/courses', courseData, token);
+                document.getElementById('uploadModal').style.display = 'none';
+                showNotification('Khóa học của bạn đã được đăng tải!', 'success');
+                form.reset();
+                loadCourses(1); // Tải lại trang đầu tiên
+            } catch (error) {
+                console.error('Upload failed:', error);
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            currentUser = null;
+            updateUIForLoggedOut();
+            showNotification('Bạn đã đăng xuất.', 'info');
+        }
+
+        // ===== QUẢN LÝ PHIÊN ĐĂNG NHẬP =====
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    currentUser = { username: payload.user.username };
+                    updateUIForLoggedIn(currentUser.username);
+                } catch(e) {
+                    handleLogout();
+                }
+            } else {
+                updateUIForLoggedOut();
+            }
+        }
+        
+        // ===== CÁC HÀM TIỆN ÍCH KHÁC =====
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '1rem 2rem';
+            notification.style.borderRadius = '8px';
+            notification.style.color = '#fff';
+            notification.style.zIndex = '3000';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s ease';
+
+            if (type === 'success') notification.style.background = 'linear-gradient(45deg, #28a745, #218838)';
+            else if (type === 'error') notification.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+            else if (type === 'warning') notification.style.background = 'linear-gradient(45deg, #ffc107, #e0a800)';
+            else notification.style.background = 'linear-gradient(45deg, #17a2b8, #138496)';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => { notification.style.opacity = '1'; }, 10);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function initializeBackgroundAnimation() {
+            const bg = document.getElementById('bgAnimation');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                bg.appendChild(particle);
+            }
+        }
+    </script>
 </body>
 </html>
