@@ -19,31 +19,24 @@
             --bg-card: #16213e;
             --accent-neon: #00ffff;
             --accent-purple: #9d4edd;
-            --accent-green: #39ff14;
             --text-primary: #ffffff;
             --text-secondary: #b8b8b8;
             --border-glow: rgba(0, 255, 255, 0.3);
             --color-admin: #ffd700; 
             --color-moderator: #1DA1F2;
         }
-
-        /* Sửa đổi con trỏ chuột */
+        
+        /* Bỏ hiệu ứng con trỏ chuột tùy chỉnh */
         body {
             font-family: 'Fira Code', monospace;
             background: var(--bg-primary);
             color: var(--text-primary);
-            /* Con trỏ mặc định là một vòng tròn nhỏ */
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="%2300ffff" stroke-width="1.5"/></svg>'), auto;
             overflow-x: hidden;
         }
-
-        /* Con trỏ khi di chuột qua các phần tử có thể nhấp */
-        .cursor-pointer, button, a, [onclick] {
-             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%2300ffff" d="M14.5 9.5a1 1 0 0 1 0 1.41l-4.24 4.24a1 1 0 0 1-1.42 0l-4.24-4.24a1 1 0 1 1 1.41-1.41L10 12.09l3.09-3.09a1 1 0 0 1 1.41 0z"/></svg>'), pointer;
-        }
         
-        /* Loại bỏ các style con trỏ cũ */
-        /* ... */
+        button, a, [onclick] {
+            cursor: pointer;
+        }
 
         header {
             background: rgba(26, 26, 46, 0.9);
@@ -63,672 +56,504 @@
             align-items: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent-neon);
-            text-shadow: 0 0 10px var(--accent-neon);
-        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-neon); text-shadow: 0 0 10px var(--accent-neon); }
+        .nav-buttons { display: flex; gap: 1rem; align-items: center; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-family: inherit; font-weight: 600; transition: all 0.3s ease; }
+        .btn-primary { background: linear-gradient(45deg, var(--accent-purple), var(--accent-neon)); color: white; }
+        .btn-secondary { background: transparent; color: var(--accent-neon); border: 1px solid var(--accent-neon); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3); }
 
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-primary {
-            background: linear-gradient(45deg, var(--accent-purple), var(--accent-neon));
-            color: white;
-            border: 1px solid transparent;
-        }
-        .btn-secondary {
-            background: transparent;
-            color: var(--accent-neon);
-            border: 1px solid var(--accent-neon);
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-        }
-
-        .course-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .course-card {
-            background: var(--bg-card);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            transition: all 0.4s ease;
-            position: relative;
-        }
-        .course-card:hover {
-            transform: perspective(1000px) translateY(-10px);
-            border-color: var(--accent-neon);
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
-        }
-
-        .course-image {
-            height: 180px;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
-        }
-        
-        .course-card-actions {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: flex;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 10;
-        }
-        .course-card:hover .course-card-actions {
-            opacity: 1;
-        }
-        .action-btn {
-            background: rgba(26, 26, 46, 0.7);
-            border: 1px solid var(--accent-neon);
-            color: var(--accent-neon);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-        .action-btn:hover {
-            background: var(--accent-neon);
-            color: var(--bg-primary);
-        }
-
+        main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+        .course-card { background: var(--bg-card); border-radius: 15px; overflow: hidden; border: 1px solid rgba(0, 255, 255, 0.1); transition: all 0.4s ease; position: relative; }
+        .course-card:hover { transform: translateY(-10px); border-color: var(--accent-neon); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2); }
+        .course-image { height: 180px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon)); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; cursor: pointer; }
         .course-content { padding: 1.5rem; }
         .course-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .course-author {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .course-author strong {
-            color: var(--accent-neon);
-            font-weight: 500;
-        }
-        .verified-tick {
-            font-size: 1rem;
-        }
+        .course-author { color: var(--text-secondary); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+        .course-author strong { color: var(--accent-neon); font-weight: 500; }
+        .verified-tick { font-size: 1rem; }
+
+        .course-card-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+        .course-card:hover .course-card-actions { opacity: 1; }
+        .action-btn { background: rgba(26,26,46,0.7); border: 1px solid var(--accent-neon); color: var(--accent-neon); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .action-btn:hover { background: var(--accent-neon); color: var(--bg-primary); }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            overflow-y: auto;
-            padding: 2rem 0;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: 15px;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            border: 1px solid var(--accent-neon);
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem; right: 1rem;
-            background: none; border: none;
-            color: var(--accent-neon);
-            font-size: 1.5rem;
-        }
-
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-card); border-radius: 15px; padding: 2rem; max-width: 600px; width: 90%; border: 1px solid var(--accent-neon); position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--accent-neon); font-size: 1.5rem; }
+        
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--bg-primary);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: inherit;
-        }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; color: var(--text-primary); }
         
         .auth-tabs { display: flex; margin-bottom: 2rem; }
-        .auth-tab {
-            flex: 1; padding: 1rem; background: transparent;
-            border: none; color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
-        }
+        .auth-tab { flex: 1; padding: 1rem; background: transparent; border: none; color: var(--text-secondary); border-bottom: 2px solid transparent; }
         .auth-tab.active { color: var(--accent-neon); border-bottom-color: var(--accent-neon); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
-        
-        .admin-panel table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .admin-panel th, .admin-panel td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-glow);
-        }
-        .admin-panel select {
-            background-color: var(--bg-secondary);
-        }
 
-        @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 1rem; }
-            .hero h1 { font-size: 2rem; }
-            .course-grid { grid-template-columns: 1fr; }
-        }
+        .admin-panel table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .admin-panel th, .admin-panel td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-glow); }
 
+        .contributors-list ol { padding-left: 2rem; }
+        .contributors-list li { font-size: 1.2rem; padding: 0.5rem; }
+        .contributors-list li:first-child { color: #ffd700; }
+        .contributors-list li:nth-child(2) { color: #c0c0c0; }
+        .contributors-list li:nth-child(3) { color: #cd7f32; }
     </style>
 </head>
 <body>
-    <!-- HTML và Script không thay đổi nhiều, chỉ cần copy lại -->
     <header>
         <nav>
             <div class="logo">CourseHub∞</div>
             <div class="nav-buttons">
-                <button class="btn btn-secondary cursor-pointer" id="contributorsBtn">
-                    <i class="fas fa-trophy"></i> Bảng vinh danh
-                </button>
-                <button class="btn btn-secondary cursor-pointer" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
-                </button>
-                <button class="btn btn-primary cursor-pointer" id="uploadBtn">
-                    <i class="fas fa-plus"></i> Đăng tải
-                </button>
+                <button class="btn btn-secondary" id="contributorsBtn"><i class="fas fa-trophy"></i> Bảng vinh danh</button>
+                <button class="btn btn-secondary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+                <button class="btn btn-primary" id="uploadBtn"><i class="fas fa-plus"></i> Đăng tải</button>
             </div>
         </nav>
     </header>
 
     <main>
-        <section class="hero" style="text-align: center; margin-bottom: 4rem;">
-            <h1>CourseHub Infinity</h1>
+        <section style="text-align: center; margin-bottom: 4rem;">
+            <h1 style="font-size: 3rem;">CourseHub Infinity</h1>
             <p>🚀 Nơi tri thức là vô hạn và miễn phí 🚀</p>
         </section>
 
         <section>
-            <h2 style="font-size: 2rem; margin-bottom: 2rem; color: var(--accent-neon);">
-                <i class="fas fa-rocket"></i> Khám phá các khóa học
-            </h2>
+            <h2 style="font-size: 2rem; margin-bottom: 2rem; color: var(--accent-neon);"><i class="fas fa-rocket"></i> Khám phá các khóa học</h2>
             <div class="course-grid" id="courseGrid"></div>
             <div id="paginationControls" style="text-align: center; margin: 2rem 0;"></div>
         </section>
     </main>
 
-    <!-- Các Modal -->
-    <div class="modal" id="authModal"><!-- Nội dung modal xác thực --></div>
-    <div class="modal" id="uploadModal"><!-- Nội dung modal đăng tải --></div>
-    <div class="modal" id="accountModal"><!-- Nội dung modal tài khoản --></div>
-    <div class="modal" id="contributorsModal"><!-- Nội dung modal vinh danh --></div>
-    <div class="modal" id="editCourseModal"><!-- Nội dung modal sửa khóa học --></div>
-    <div class="modal" id="confirmDeleteModal"><!-- Nội dung modal xác nhận xóa --></div>
+    <!-- ==== CÁC MODAL ==== -->
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+                <button class="auth-tab" data-tab="register">Đăng ký</button>
+            </div>
+            <form class="auth-form active" id="loginForm">
+                <div class="form-group"><label>Email hoặc tên đăng nhập</label><input type="text" required></div>
+                <div class="form-group"><label>Mật khẩu</label><input type="password" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+            </form>
+            <form class="auth-form" id="registerForm">
+                <div class="form-group"><label>Tên đăng nhập</label><input type="text" required></div>
+                <div class="form-group"><label>Email</label><input type="email" required></div>
+                <div class="form-group"><label>Mật khẩu</label><input type="password" required></div>
+                <div class="form-group"><label>Xác nhận mật khẩu</label><input type="password" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+         <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 style="margin-bottom: 2rem; color: var(--accent-neon);"><i class="fas fa-upload"></i> Đăng tải khóa học mới</h3>
+            <form id="uploadForm">
+                <div class="form-group"><label>Tên khóa học</label><input type="text" required></div>
+                <div class="form-group"><label>Link khóa học</label><input type="url" required></div>
+                <div class="form-group"><label>Danh mục</label>
+                    <select>
+                        <option>Frontend</option><option>Backend</option><option>Mobile</option><option>AI/ML</option><option>DevOps</option><option>Database</option><option>UI/UX</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Mô tả</label><textarea rows="4"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng tải</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Account Management Modal -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 style="margin-bottom: 2rem; color: var(--accent-neon);"><i class="fas fa-user-cog"></i> Quản lý tài khoản</h3>
+            <div id="accountDetails"></div>
+        </div>
+    </div>
+    
+    <!-- Top Contributors Modal -->
+    <div class="modal" id="contributorsModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 style="margin-bottom: 2rem; color: var(--accent-neon);"><i class="fas fa-trophy"></i> Bảng vinh danh</h3>
+            <div id="contributorsDetails"></div>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div class="modal" id="editCourseModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h3><i class="fas fa-edit"></i> Chỉnh sửa khóa học</h3>
+            <form id="editCourseForm" style="margin-top: 2rem;">
+                <input type="hidden" id="editCourseId">
+                <div class="form-group"><label>Tên khóa học</label><input type="text" id="editCourseTitle" required></div>
+                <div class="form-group"><label>Link khóa học</label><input type="url" id="editCourseLink" required></div>
+                <div class="form-group"><label>Danh mục</label>
+                    <select id="editCourseCategory">
+                        <option>Frontend</option><option>Backend</option><option>Mobile</option><option>AI/ML</option><option>DevOps</option><option>Database</option><option>UI/UX</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Mô tả</label><textarea id="editCourseDescription" rows="4"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Lưu thay đổi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal" id="confirmDeleteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h4><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h4>
+            <p style="margin: 1rem 0;">Bạn có chắc chắn muốn xóa khóa học này không?</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">Hủy</button>
+                <button class="btn btn-primary" style="background: #dc3545;" id="confirmDeleteBtn">Xóa</button>
+            </div>
+        </div>
+    </div>
     
     <script>
+        // Toàn bộ mã JavaScript từ file script.js của bạn sẽ được đặt ở đây
         const API_URL = 'https://backend-nyun.onrender.com';
-let currentUser = null;
-let currentPage = 1;
-const limit = 6;
+        let currentUser = null;
+        let currentPage = 1;
+        const limit = 6;
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial setup
-    loadCourses(currentPage);
-    setupEventListeners();
-    checkLoginStatus();
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCourses(currentPage);
+            setupEventListeners();
+            checkLoginStatus();
+        });
 
-// --- API Abstraction ---
-async function fetchData(endpoint, options = {}) {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            options.headers = { ...options.headers, 'x-auth-token': token };
+        async function fetchData(endpoint, options = {}) {
+            try {
+                options.headers = options.headers || {};
+                const token = localStorage.getItem('token');
+                if (token) {
+                    options.headers['x-auth-token'] = token;
+                }
+                const response = await fetch(`${API_URL}${endpoint}`, options);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.msg || 'Lỗi không xác định');
+                return data;
+            } catch (error) {
+                showNotification(error.message, 'error');
+                throw error;
+            }
         }
-        const response = await fetch(`${API_URL}${endpoint}`, options);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.msg || 'Lỗi không xác định');
-        return data;
-    } catch (error) {
-        showNotification(error.message, 'error');
-        throw error;
-    }
-}
 
-// --- Course Rendering ---
-async function loadCourses(page) {
-    currentPage = page;
-    const courseGrid = document.getElementById('courseGrid');
-    courseGrid.innerHTML = '<div>Đang tải...</div>';
-    try {
-        const data = await fetchData(`/api/courses?page=${page}&limit=${limit}`);
-        courseGrid.innerHTML = '';
-        if (data.courses && data.courses.length > 0) {
-            data.courses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
-            renderPaginationControls(data.totalPages, data.currentPage);
-        } else {
-            courseGrid.innerHTML = '<p>Chưa có khóa học nào.</p>';
+        async function loadCourses(page = 1) {
+            currentPage = page;
+            const courseGrid = document.getElementById('courseGrid');
+            courseGrid.innerHTML = '<div>Đang tải...</div>';
+            try {
+                const data = await fetchData(`/api/courses?page=${page}&limit=${limit}`);
+                courseGrid.innerHTML = '';
+                if (data.courses && data.courses.length > 0) {
+                    data.courses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
+                    renderPaginationControls(data.totalPages, data.currentPage);
+                } else {
+                    courseGrid.innerHTML = '<p>Chưa có khóa học nào.</p>';
+                }
+            } catch (error) {
+                courseGrid.innerHTML = `<p>Không thể tải khóa học.</p>`;
+            }
         }
-    } catch (error) {
-        courseGrid.innerHTML = `<p>Không thể tải khóa học.</p>`;
-    }
-}
 
-function createCourseCard(course) {
-    const card = document.createElement('div');
-    card.className = 'course-card';
-    
-    // --- Verification Ticks ---
-    let tick = '';
-    // Lỗi tiềm ẩn: course.author có thể không tồn tại nếu populate không thành công
-    if (course.author && course.author.role === 'admin') {
-        tick = `<i class="fas fa-check-circle verified-tick" style="color: var(--color-admin);" title="Admin"></i>`;
-    } else if (course.author && course.author.role === 'moderator') {
-        tick = `<i class="fas fa-check-circle verified-tick" style="color: var(--color-moderator);" title="Phó quản lý"></i>`;
-    }
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            
+            let tick = '';
+            if (course.author && course.author.role === 'admin') {
+                tick = `<i class="fas fa-check-circle verified-tick" style="color: var(--color-admin);" title="Admin"></i>`;
+            } else if (course.author && course.author.role === 'moderator') {
+                tick = `<i class="fas fa-check-circle verified-tick" style="color: var(--color-moderator);" title="Phó quản lý"></i>`;
+            }
 
-    // --- Authorization for Actions ---
-    let actions = '';
-    const isOwner = currentUser && course.author && currentUser.id === course.author._id;
-    const isAdmin = currentUser && currentUser.role === 'admin';
-    const isModerator = currentUser && currentUser.role === 'moderator';
-    const isAuthorAdmin = course.author && course.author.role === 'admin';
+            let actions = '';
+            const isOwner = currentUser && course.author && currentUser.id === course.author._id;
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isModerator = currentUser && currentUser.role === 'moderator';
+            const isAuthorAdmin = course.author && course.author.role === 'admin';
 
-    if (isAdmin || (isModerator && !isAuthorAdmin) || isOwner) {
-        actions = `
-        <div class="course-card-actions">
-            <button class="action-btn cursor-pointer" onclick='openEditModal(${JSON.stringify(course)})'><i class="fas fa-pen"></i></button>
-            <button class="action-btn cursor-pointer" onclick="confirmDelete('${course._id}')"><i class="fas fa-trash"></i></button>
-        </div>`;
-    }
-
-    card.innerHTML = `
-        ${actions}
-        <div class="course-image cursor-pointer" onclick="window.open('${course.link}', '_blank')"><i class="fas fa-play"></i></div>
-        <div class="course-content">
-            <h3 class="course-title">${course.title}</h3>
-            <p class="course-author">by @${course.author ? course.author.username : '...'} ${tick}</p>
-        </div>`;
-    return card;
-}
-
-// --- UI Updates & Modals ---
-function updateUIForLoggedIn(user) {
-    currentUser = user;
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.innerHTML = `<i class="fas fa-user"></i> ${user.username}`;
-    loginBtn.className = 'btn btn-primary cursor-pointer';
-    loginBtn.onclick = openAccountModal;
-    if (!document.getElementById('logoutBtn')) {
-        const logoutBtn = document.createElement('button');
-        logoutBtn.id = 'logoutBtn';
-        logoutBtn.className = 'btn btn-secondary cursor-pointer';
-        logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
-        logoutBtn.onclick = handleLogout;
-        loginBtn.parentElement.insertBefore(logoutBtn, loginBtn.nextSibling);
-    }
-}
-
-function updateUIForLoggedOut() {
-    currentUser = null;
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
-    loginBtn.className = 'btn btn-secondary cursor-pointer';
-    loginBtn.onclick = () => openModal('authModal');
-    document.getElementById('logoutBtn')?.remove();
-}
-
-async function openAccountModal() {
-    openModal('accountModal');
-    const detailsDiv = document.getElementById('accountDetails');
-    detailsDiv.innerHTML = 'Đang tải thông tin...';
-    try {
-        const data = await fetchData('/api/users/me');
-        let adminPanel = '';
-        if (data.user.role === 'admin') {
-            adminPanel = `
-                <div class="admin-panel">
-                    <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Bảng điều khiển Admin</h4>
-                    <div id="userListContainer">Đang tải danh sách thành viên...</div>
+            if (isAdmin || (isModerator && !isAuthorAdmin) || isOwner) {
+                actions = `
+                <div class="course-card-actions">
+                    <button class="action-btn" onclick='openEditModal(${JSON.stringify(course)})'><i class="fas fa-pen"></i></button>
+                    <button class="action-btn" onclick="confirmDelete('${course._id}')"><i class="fas fa-trash"></i></button>
                 </div>`;
-        }
-        detailsDiv.innerHTML = `
-            <div>
-                <p><strong>Tên:</strong> ${data.user.username}</p>
-                <p><strong>Email:</strong> ${data.user.email}</p>
-                <p><strong>Vai trò:</strong> ${data.user.role}</p>
-                <p><strong>Đóng góp:</strong> ${data.user.contributionCount} khóa học</p>
-            </div>
-            ${adminPanel}`;
-        
-        if (data.user.role === 'admin') loadAllUsersForAdmin();
+            }
 
-    } catch (error) {
-        detailsDiv.innerHTML = 'Không thể tải thông tin tài khoản.';
-    }
-}
-
-async function loadAllUsersForAdmin() {
-    const container = document.getElementById('userListContainer');
-    try {
-        const users = await fetchData('/api/admin/users');
-        container.innerHTML = `
-            <table>
-                <thead>
-                    <tr><th>Thành viên</th><th>Vai trò</th><th>Hành động</th></tr>
-                </thead>
-                <tbody>
-                    ${users.map(user => `
-                        <tr>
-                            <td>${user.username}</td>
-                            <td>${user.role}</td>
-                            <td>
-                                ${user.role !== 'admin' ? `
-                                    <select onchange="handleUpdateUserRole('${user._id}', this.value)">
-                                        <option value="user" ${user.role === 'user' ? 'selected' : ''}>Thành viên</option>
-                                        <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>Phó quản lý</option>
-                                    </select>
-                                ` : 'Không có'}
-                            </td>
-                        </tr>`).join('')}
-                </tbody>
-            </table>`;
-    } catch(e) {
-        container.innerHTML = 'Lỗi khi tải danh sách thành viên.';
-    }
-}
-
-async function openContributorsModal() {
-    openModal('contributorsModal');
-    const detailsDiv = document.getElementById('contributorsDetails');
-    detailsDiv.innerHTML = 'Đang tải danh sách...';
-    try {
-        const users = await fetchData('/api/users/top-contributors');
-        if(users && users.length > 0) {
-             detailsDiv.innerHTML = `
-                <div class="contributors-list">
-                    <ol>
-                        ${users.map(u => `<li><strong>${u.username}</strong> - ${u.contributionCount} đóng góp</li>`).join('')}
-                    </ol>
+            card.innerHTML = `
+                ${actions}
+                <div class="course-image" onclick="window.open('${course.link}', '_blank')"><i class="fas fa-play"></i></div>
+                <div class="course-content">
+                    <h3 class="course-title">${course.title}</h3>
+                    <p class="course-author">by <strong>@${course.authorName || '...'}</strong> ${tick}</p>
                 </div>`;
-        } else {
-            detailsDiv.innerHTML = '<p>Chưa có ai đóng góp. Hãy là người đầu tiên!</p>';
+            return card;
         }
-    } catch (error) {
-        detailsDiv.innerHTML = 'Không thể tải danh sách người đóng góp.';
-    }
-}
 
-// --- Event Handlers & Actions ---
-function handleLogout() {
-    localStorage.removeItem('token');
-    updateUIForLoggedOut();
-    showNotification('Bạn đã đăng xuất.', 'info');
-}
+        function updateUIForLoggedIn(user) {
+            currentUser = user;
+            const loginBtn = document.getElementById('loginBtn');
+            const navButtons = loginBtn.parentElement;
+            
+            loginBtn.innerHTML = `<i class="fas fa-user"></i> ${user.username}`;
+            loginBtn.onclick = openAccountModal;
 
-async function handleRegister(e) {
-    e.preventDefault();
-    const form = e.target;
-    const username = form.elements[0].value;
-    const email = form.elements[1].value;
-    const password = form.elements[2].value;
-    if (password !== form.elements[3].value) return showNotification('Mật khẩu không khớp!', 'error');
-    
-    try {
-        const data = await fetchData('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
-        });
-        localStorage.setItem('token', data.token);
-        checkLoginStatus();
-        closeModal('authModal');
-        showNotification('Đăng ký thành công!', 'success');
-        form.reset();
-    } catch (error) {}
-}
-
-async function handleLogin(e) {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.elements[0].value;
-    const password = form.elements[1].value;
-    try {
-        const data = await fetchData('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        localStorage.setItem('token', data.token);
-        checkLoginStatus();
-        closeModal('authModal');
-        showNotification('Chào mừng bạn trở lại!', 'success');
-        form.reset();
-    } catch (error) {}
-}
-
-async function handleUpload(e) {
-    e.preventDefault();
-    const form = e.target;
-    const courseData = {
-        title: form.elements[0].value,
-        link: form.elements[1].value,
-        category: form.elements[2].value,
-        description: form.elements[3].value
-    };
-    try {
-        await fetchData('/api/courses', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(courseData)
-        });
-        closeModal('uploadModal');
-        showNotification('Đăng tải khóa học thành công!', 'success');
-        form.reset();
-        loadCourses(1);
-    } catch(error) {}
-}
-
-
-async function handleUpdateUserRole(userId, newRole) {
-    try {
-        await fetchData(`/api/admin/users/${userId}/role`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role: newRole })
-        });
-        showNotification('Cập nhật vai trò thành công!', 'success');
-        loadAllUsersForAdmin(); // Refresh list
-    } catch (error) {}
-}
-
-function openEditModal(course) {
-    document.getElementById('editCourseId').value = course._id;
-    document.getElementById('editCourseTitle').value = course.title;
-    document.getElementById('editCourseLink').value = course.link;
-    document.getElementById('editCourseCategory').value = course.category;
-    document.getElementById('editCourseDescription').value = course.description;
-    openModal('editCourseModal');
-}
-
-async function handleEditCourse(e) {
-    e.preventDefault();
-    const courseId = document.getElementById('editCourseId').value;
-    const courseData = {
-        title: document.getElementById('editCourseTitle').value,
-        link: document.getElementById('editCourseLink').value,
-        category: document.getElementById('editCourseCategory').value,
-        description: document.getElementById('editCourseDescription').value,
-    };
-    try {
-        await fetchData(`/api/courses/${courseId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(courseData)
-        });
-        closeModal('editCourseModal');
-        showNotification('Cập nhật khóa học thành công!', 'success');
-        loadCourses(currentPage);
-    } catch (error) {}
-}
-
-function confirmDelete(courseId) {
-    openModal('confirmDeleteModal');
-    document.getElementById('confirmDeleteBtn').onclick = () => handleDeleteCourse(courseId);
-}
-
-async function handleDeleteCourse(courseId) {
-    try {
-        await fetchData(`/api/courses/${courseId}`, { method: 'DELETE' });
-        closeModal('confirmDeleteModal');
-        showNotification('Đã xóa khóa học.', 'success');
-        loadCourses(currentPage);
-    } catch (error) {}
-}
-
-// --- Utility Functions ---
-function setupEventListeners() {
-    // Main navigation buttons
-    document.getElementById('loginBtn').addEventListener('click', () => openModal('authModal'));
-    document.getElementById('contributorsBtn').addEventListener('click', openContributorsModal);
-    document.getElementById('uploadBtn').addEventListener('click', () => {
-        if (!currentUser) {
-            showNotification('Bạn cần đăng nhập để đăng tải.', 'warning');
-            openModal('authModal');
-        } else {
-            openModal('uploadModal');
+            if (!document.getElementById('logoutBtn')) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.id = 'logoutBtn';
+                logoutBtn.className = 'btn btn-secondary';
+                logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
+                logoutBtn.onclick = handleLogout;
+                navButtons.insertBefore(logoutBtn, document.getElementById('uploadBtn'));
+            }
         }
-    });
 
-    // All modal close buttons
-    document.querySelectorAll('.modal-close').forEach(btn => {
-        btn.addEventListener('click', () => closeModal(btn.closest('.modal').id));
-    });
+        function updateUIForLoggedOut() {
+            currentUser = null;
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+            loginBtn.onclick = () => openModal('authModal');
+            document.getElementById('logoutBtn')?.remove();
+        }
 
-    // Auth tabs (Login/Register)
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelector('.auth-tab.active').classList.remove('active');
-            this.classList.add('active');
-            document.querySelector('.auth-form.active').classList.remove('active');
-            document.getElementById(this.dataset.tab + 'Form').classList.add('active');
-        });
-    });
+        async function openAccountModal() {
+            openModal('accountModal');
+            const detailsDiv = document.getElementById('accountDetails');
+            detailsDiv.innerHTML = 'Đang tải thông tin...';
+            try {
+                const data = await fetchData('/api/users/me');
+                let adminPanel = '';
+                if (data.user.role === 'admin') {
+                    adminPanel = `<div class="admin-panel"><h4 style="margin-top: 2rem;">Bảng điều khiển Admin</h4><div id="userListContainer"></div></div>`;
+                }
+                detailsDiv.innerHTML = `
+                    <div>
+                        <p><strong>Tên:</strong> ${data.user.username}</p>
+                        <p><strong>Email:</strong> ${data.user.email}</p>
+                        <p><strong>Vai trò:</strong> ${data.user.role}</p>
+                        <p><strong>Đóng góp:</strong> ${data.user.contributionCount} khóa học</p>
+                    </div>
+                    ${adminPanel}`;
+                
+                if (data.user.role === 'admin') loadAllUsersForAdmin();
+            } catch (error) {
+                detailsDiv.innerHTML = 'Không thể tải thông tin tài khoản.';
+            }
+        }
 
-    // Form submissions
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('registerForm').addEventListener('submit', handleRegister);
-    document.getElementById('uploadForm').addEventListener('submit', handleUpload);
-    document.getElementById('editCourseForm').addEventListener('submit', handleEditCourse);
-}
+        async function loadAllUsersForAdmin() {
+            const container = document.getElementById('userListContainer');
+            container.innerHTML = 'Đang tải danh sách...';
+            try {
+                const users = await fetchData('/api/admin/users');
+                container.innerHTML = `
+                    <table>
+                        <thead><tr><th>Thành viên</th><th>Vai trò</th><th>Hành động</th></tr></thead>
+                        <tbody>
+                            ${users.map(user => `
+                                <tr>
+                                    <td>${user.username}</td>
+                                    <td>${user.role}</td>
+                                    <td>
+                                        ${user.role !== 'admin' ? `
+                                            <select onchange="handleUpdateUserRole('${user._id}', this.value)">
+                                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>Thành viên</option>
+                                                <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>Phó quản lý</option>
+                                            </select>` : 'Không có'}
+                                    </td>
+                                </tr>`).join('')}
+                        </tbody>
+                    </table>`;
+            } catch(e) {
+                container.innerHTML = 'Lỗi khi tải danh sách thành viên.';
+            }
+        }
 
-function checkLoginStatus() {
-    const token = localStorage.getItem('token');
-    if (token) {
-        try {
-            const user = JSON.parse(atob(token.split('.')[1])).user;
-            updateUIForLoggedIn(user);
-        } catch (e) { handleLogout(); }
-    } else { updateUIForLoggedOut(); }
-}
+        async function openContributorsModal() {
+            openModal('contributorsModal');
+            const detailsDiv = document.getElementById('contributorsDetails');
+            detailsDiv.innerHTML = 'Đang tải...';
+            try {
+                const users = await fetchData('/api/users/top-contributors');
+                detailsDiv.innerHTML = users.length > 0 ? `
+                    <div class="contributors-list">
+                        <ol>${users.map(u => `<li><strong>${u.username}</strong> - ${u.contributionCount} đóng góp</li>`).join('')}</ol>
+                    </div>` : '<p>Chưa có ai đóng góp.</p>';
+            } catch (error) {
+                detailsDiv.innerHTML = 'Không thể tải danh sách.';
+            }
+        }
 
-function openModal(modalId) { 
-    const modal = document.getElementById(modalId);
-    if(modal) modal.style.display = 'flex'; 
-}
+        function handleLogout() {
+            localStorage.removeItem('token');
+            updateUIForLoggedOut();
+            showNotification('Bạn đã đăng xuất.', 'info');
+        }
 
-function closeModal(modalId) { 
-    const modal = document.getElementById(modalId);
-    if(modal) modal.style.display = 'none'; 
-}
+        async function handleRegister(e) {
+            e.preventDefault();
+            const form = e.target;
+            const username = form.elements[0].value, email = form.elements[1].value, password = form.elements[2].value;
+            if (password !== form.elements[3].value) return showNotification('Mật khẩu không khớp!', 'error');
+            try {
+                const data = await fetchData('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                localStorage.setItem('token', data.token);
+                checkLoginStatus();
+                closeModal('authModal');
+                form.reset();
+            } catch (error) {}
+        }
 
-function showNotification(message, type = 'info') {
-    const el = document.createElement('div');
-    el.textContent = message;
-    Object.assign(el.style, {
-        position: 'fixed', bottom: '20px', right: '20px', padding: '1rem 2rem',
-        borderRadius: '8px', color: '#fff', zIndex: '3000', opacity: '0',
-        transition: 'opacity 0.5s ease',
-        background: type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'
-    });
-    document.body.appendChild(el);
-    setTimeout(() => { el.style.opacity = '1'; }, 10);
-    setTimeout(() => {
-        el.style.opacity = '0';
-        setTimeout(() => el.remove(), 500);
-    }, 3000);
-}
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.elements[0].value, password = form.elements[1].value;
+            try {
+                const data = await fetchData('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                localStorage.setItem('token', data.token);
+                checkLoginStatus();
+                closeModal('authModal');
+                form.reset();
+            } catch (error) {}
+        }
 
-function renderPaginationControls(totalPages, currentPage) {
-    const controls = document.getElementById('paginationControls');
-    controls.innerHTML = '';
-    if (totalPages <= 1) return;
-    
-    if (currentPage > 1) {
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'btn btn-secondary';
-        prevBtn.innerHTML = '&laquo; Trước';
-        prevBtn.onclick = () => loadCourses(currentPage - 1);
-        controls.appendChild(prevBtn);
-    }
+        async function handleUpload(e) {
+            e.preventDefault();
+            const form = e.target;
+            const courseData = { title: form.elements[0].value, link: form.elements[1].value, category: form.elements[2].value, description: form.elements[3].value };
+            try {
+                await fetchData('/api/courses', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(courseData) });
+                closeModal('uploadModal');
+                loadCourses(1);
+            } catch(error) {}
+        }
 
-    const pageInfo = document.createElement('span');
-    pageInfo.style.margin = '0 1rem';
-    pageInfo.textContent = `Trang ${currentPage} / ${totalPages}`;
-    controls.appendChild(pageInfo);
+        async function handleUpdateUserRole(userId, newRole) {
+            try {
+                await fetchData(`/api/admin/users/${userId}/role`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: newRole }) });
+                showNotification('Cập nhật vai trò thành công!', 'success');
+                loadAllUsersForAdmin();
+            } catch (error) {}
+        }
 
-    if (currentPage < totalPages) {
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'btn btn-secondary';
-        nextBtn.innerHTML = 'Sau &raquo;';
-        nextBtn.onclick = () => loadCourses(currentPage + 1);
-        controls.appendChild(nextBtn);
-    }
-}
-    </script> <!-- Giả sử script được tách ra -->
+        function openEditModal(course) {
+            document.getElementById('editCourseId').value = course._id;
+            document.getElementById('editCourseTitle').value = course.title;
+            document.getElementById('editCourseLink').value = course.link;
+            document.getElementById('editCourseCategory').value = course.category;
+            document.getElementById('editCourseDescription').value = course.description;
+            openModal('editCourseModal');
+        }
+
+        async function handleEditCourse(e) {
+            e.preventDefault();
+            const id = document.getElementById('editCourseId').value;
+            const data = { title: document.getElementById('editCourseTitle').value, link: document.getElementById('editCourseLink').value, category: document.getElementById('editCourseCategory').value, description: document.getElementById('editCourseDescription').value };
+            try {
+                await fetchData(`/api/courses/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                closeModal('editCourseModal');
+                loadCourses(currentPage);
+            } catch (error) {}
+        }
+
+        function confirmDelete(id) {
+            openModal('confirmDeleteModal');
+            document.getElementById('confirmDeleteBtn').onclick = () => handleDeleteCourse(id);
+        }
+
+        async function handleDeleteCourse(id) {
+            try {
+                await fetchData(`/api/courses/${id}`, { method: 'DELETE' });
+                closeModal('confirmDeleteModal');
+                loadCourses(currentPage);
+            } catch (error) {}
+        }
+
+        function setupEventListeners() {
+            document.getElementById('loginBtn').onclick = () => openModal('authModal');
+            document.getElementById('contributorsBtn').onclick = openContributorsModal;
+            document.getElementById('uploadBtn').onclick = () => currentUser ? openModal('uploadModal') : openModal('authModal');
+            document.querySelectorAll('.modal-close').forEach(btn => btn.onclick = () => closeModal(btn.closest('.modal').id));
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.onclick = function() {
+                document.querySelector('.auth-tab.active').classList.remove('active');
+                this.classList.add('active');
+                document.querySelector('.auth-form.active').classList.remove('active');
+                document.getElementById(this.dataset.tab + 'Form').classList.add('active');
+            });
+            document.getElementById('loginForm').onsubmit = handleLogin;
+            document.getElementById('registerForm').onsubmit = handleRegister;
+            document.getElementById('uploadForm').onsubmit = handleUpload;
+            document.getElementById('editCourseForm').onsubmit = handleEditCourse;
+            document.getElementById('cancelDeleteBtn').onclick = () => closeModal('confirmDeleteModal');
+        }
+
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const user = JSON.parse(atob(token.split('.')[1])).user;
+                    updateUIForLoggedIn(user);
+                } catch (e) { handleLogout(); }
+            } else { updateUIForLoggedOut(); }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showNotification(message, type = 'info') {
+            const el = document.createElement('div');
+            el.textContent = message;
+            Object.assign(el.style, { position: 'fixed', bottom: '20px', right: '20px', padding: '1rem 2rem', borderRadius: '8px', color: '#fff', zIndex: '3000', opacity: '0', transition: 'opacity 0.5s ease', background: type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8' });
+            document.body.appendChild(el);
+            setTimeout(() => el.style.opacity = '1', 10);
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 3000);
+        }
+
+        function renderPaginationControls(totalPages, currentPage) {
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = '';
+            if (totalPages <= 1) return;
+            if (currentPage > 1) {
+                const prev = document.createElement('button');
+                prev.className = 'btn btn-secondary';
+                prev.innerHTML = '&laquo; Trước';
+                prev.onclick = () => loadCourses(currentPage - 1);
+                controls.appendChild(prev);
+            }
+            const pageInfo = document.createElement('span');
+            pageInfo.style.margin = '0 1rem';
+            pageInfo.textContent = `Trang ${currentPage} / ${totalPages}`;
+            controls.appendChild(pageInfo);
+            if (currentPage < totalPages) {
+                const next = document.createElement('button');
+                next.className = 'btn btn-secondary';
+                next.innerHTML = 'Sau &raquo;';
+                next.onclick = () => loadCourses(currentPage + 1);
+                controls.appendChild(next);
+            }
+        }
+    </script>
 </body>
 </html>
-
