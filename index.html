@@ -521,14 +521,14 @@
 
         <section>
             <h2 class="section-title">
-                <i class="fas fa-fire"></i>
-                Tất cả khóa học
+                <i class="fas fa-rocket"></i>
+                Khám phá các khóa học
             </h2>
             <div class="course-grid" id="courseGrid">
                 </div>
         </section>
-        
-        <section class="pagination-section" style="text-align: center; margin-bottom: 2rem;">
+
+        <section class="pagination-section" style="text-align: center; margin: 2rem 0;">
             <div id="paginationControls">
                 </div>
         </section>
@@ -625,7 +625,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://backend-nyun.onrender.com'; // Hoặc URL backend của bạn trên Render
+        const API_URL = 'https://backend-nyun.onrender.com'; // Hoặc URL backend của bạn
         let currentUser = null;
         let currentPage = 1;
         const limit = 6; // Số khóa học mỗi trang
@@ -641,14 +641,13 @@
         // ===== CÁC HÀM GỌI API =====
         async function fetchCourses(page = 1) {
             try {
-                // Thêm page và limit vào URL
-                const response = await fetch(`${API_URL}/courses?page=${page}&limit=${limit}`);
+                const response = await fetch(`${API_URL}/api/courses?page=${page}&limit=${limit}`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 return await response.json();
             } catch (error) {
                 console.error('Failed to fetch courses:', error);
                 showNotification('Không thể tải danh sách khóa học.', 'error');
-                return { courses: [], totalPages: 0, currentPage: 1 }; // Trả về đối tượng trống khi lỗi
+                return { courses: [], totalPages: 0, currentPage: 1 };
             }
         }
 
@@ -676,18 +675,20 @@
 
         // ===== CÁC HÀM GIAO DIỆN =====
         function loadCourses(page) {
-            currentPage = page; // Cập nhật trang hiện tại
+            currentPage = page;
             const courseGrid = document.getElementById('courseGrid');
-            courseGrid.innerHTML = '<div class="loading"></div>'; // Loading indicator
+            courseGrid.innerHTML = '<div class="loading"></div>';
 
             fetchCourses(page).then(data => {
                 courseGrid.innerHTML = '';
                 
-                if (data.courses && data.courses.length > 0) {
+                // *** SỬA LỖI TẠI ĐÂY ***
+                // Kiểm tra xem data.courses có tồn tại và có phần tử không
+                if (data && data.courses && data.courses.length > 0) {
                      data.courses.forEach(course => courseGrid.appendChild(createCourseCard(course)));
                      renderPaginationControls(data.totalPages, data.currentPage);
                 } else {
-                    courseGrid.innerHTML = '<p>Không tìm thấy khóa học nào.</p>';
+                    courseGrid.innerHTML = '<p>Chưa có khóa học nào được đăng tải.</p>';
                     document.getElementById('paginationControls').innerHTML = '';
                 }
             });
@@ -697,12 +698,12 @@
             const paginationControls = document.getElementById('paginationControls');
             paginationControls.innerHTML = '';
 
-            if (totalPages <= 1) return; // Không hiển thị nếu chỉ có 1 trang
+            if (totalPages <= 1) return;
 
             // Nút Trang trước
             if (currentPage > 1) {
                 const prevBtn = document.createElement('button');
-                prevBtn.innerHTML = '&laquo; Trang trước';
+                prevBtn.innerHTML = '&laquo; Trước';
                 prevBtn.className = 'btn btn-secondary cursor-pointer';
                 prevBtn.style.margin = '0 5px';
                 prevBtn.onclick = () => loadCourses(currentPage - 1);
@@ -719,14 +720,13 @@
             // Nút Trang sau
             if (currentPage < totalPages) {
                 const nextBtn = document.createElement('button');
-                nextBtn.innerHTML = 'Trang sau &raquo;';
+                nextBtn.innerHTML = 'Sau &raquo;';
                 nextBtn.className = 'btn btn-secondary cursor-pointer';
                 nextBtn.style.margin = '0 5px';
                 nextBtn.onclick = () => loadCourses(currentPage + 1);
                 paginationControls.appendChild(nextBtn);
             }
         }
-
 
         function createCourseCard(course) {
             const card = document.createElement('div');
@@ -773,9 +773,6 @@
 
         function updateUIForLoggedOut() {
             const loginBtn = document.getElementById('loginBtn');
-            const navButtons = document.querySelector('.nav-buttons');
-            const uploadBtn = document.getElementById('uploadBtn');
-
             const logoutBtn = document.getElementById('logoutBtn');
             if(logoutBtn) logoutBtn.remove();
 
@@ -829,7 +826,7 @@
             }
 
             try {
-                const data = await postData('/auth/register', { username, email, password });
+                const data = await postData('/api/auth/register', { username, email, password });
                 localStorage.setItem('token', data.token);
                 checkLoginStatus();
                 document.getElementById('authModal').style.display = 'none';
@@ -847,7 +844,7 @@
             const password = form.querySelector('input[type="password"]').value;
 
             try {
-                const data = await postData('/auth/login', { email, password });
+                const data = await postData('/api/auth/login', { email, password });
                 localStorage.setItem('token', data.token);
                 checkLoginStatus();
                 document.getElementById('authModal').style.display = 'none';
@@ -874,11 +871,11 @@
             };
             
             try {
-                await postData('/courses', courseData, token);
+                await postData('/api/courses', courseData, token);
                 document.getElementById('uploadModal').style.display = 'none';
                 showNotification('Khóa học của bạn đã được đăng tải!', 'success');
                 form.reset();
-                loadCourses(1); // Tải lại trang đầu tiên
+                loadCourses(1); // Tải lại trang đầu tiên sau khi đăng
             } catch (error) {
                 console.error('Upload failed:', error);
             }
